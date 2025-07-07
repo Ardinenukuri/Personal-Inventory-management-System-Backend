@@ -83,4 +83,24 @@ export const AdminController = {
             res.status(500).json({ message: 'Error inviting user', error: error.message });
         }
     },
+
+    updateUser: async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.id, 10);
+      const updateData = req.body; 
+
+      const updatedUser = await AdminService.updateUser(userId, updateData);
+      
+      if (!updatedUser) {
+
+        res.status(404).json({ message: 'User not found.' });
+        return; 
+      }
+      res.status(200).json(updatedUser);
+
+    } catch (error: any) {
+      res.status(500).json({ message: 'Error updating user', error: error.message });
+    }
+  },
+
 };

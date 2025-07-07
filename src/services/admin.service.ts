@@ -138,6 +138,25 @@ export const AdminService = {
 
         return newUser;
     },
+
+    updateUser: async (userId: number, updateData: { role?: string, status?: string }) => {
+    const { role, status } = updateData;
+
+    const { rows: existingUsers } = await pool.query('SELECT * FROM users WHERE id = $1', [userId]);
+    if (existingUsers.length === 0) {
+      return null; 
+    }
+    const currentUser = existingUsers[0];
+    const finalRole = role || currentUser.role;
+    const finalStatus = status || currentUser.status;
+
+    const { rows } = await pool.query(
+        'UPDATE users SET role = $1, status = $2 WHERE id = $3 RETURNING *',
+        [finalRole, finalStatus, userId]
+    );
+    return rows[0];
+  },
+
     
 
 };

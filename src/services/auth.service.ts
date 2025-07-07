@@ -80,6 +80,18 @@ export const AuthService = {
         }
         const user = rows[0];
 
+        // --- SECURITY CHECK ---
+  if (user.status === 'disabled') {
+    throw new Error('Your account has been disabled. Please contact support.');
+  }
+  if (user.status === 'pending') {
+    throw new Error('Your account is pending. Please check your email to complete registration.');
+  }
+
+  const isMatch = await bcrypt.compare(password, user.password_hash);
+  if (!isMatch) return null;
+
+
         if (!user.is_verified) {
             const err = new Error('Please verify your email before logging in.');
             err.name = 'EmailNotVerified';
@@ -276,19 +288,15 @@ export const AuthService = {
         const passwordHash = await bcrypt.hash(password, salt);
 
         const { rows: updatedRows } = await pool.query(
-            `UPDATE users SET 
-                username = $1,
-                first_name = $2,
-                last_name = $3,
-                password_hash = $4,
-                is_verified = TRUE,
-                verification_token = NULL 
-             WHERE id = $5
-             RETURNING id, username, email`,
-            [username, firstName, lastName, passwordHash, user.id]
-        );
-        
-        return { success: true, user: updatedRows[0] };
+    `UPDATE users SET 
+        username = $1, first_name = $2, last_name = $3, password_hash = $4,
+        is_verified = TRUE, verification_token = NULL,
+        status = 'active' -- Set status to active upon completion
+     WHERE id = $5
+     RETURNING id, username, email`,
+    [username, firstName, lastName, passwordHash, user.id]
+  );
+  return { success: true, user: updatedRows[0] };
     },
 
     inviteUser: async (email: string, req: Request) => { 
@@ -297,11 +305,11 @@ export const AuthService = {
 
         const { rows } = await pool.query(
             'INSERT INTO users (email, verification_token) VALUES ($1, $2) RETURNING *',
-            [email, hashedToken]
+            [email, hashedToken, , 'pending']
         );
         const newUser = rows[0];
 
-        const completeRegistrationURL = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/complete-registration/${invitationToken}`;
+        const completeRegistrationURL = `${process.env.FRONTED_URL || 'http://localhost:3000'}/complete-registration/${invitationToken}`;
 
         const message = `
             <h1>You've been invited!</h1>

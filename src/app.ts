@@ -6,6 +6,8 @@ import productRoutes from './routes/product.routes';
 import categoryRoutes from './routes/category.routes';
 import stockRoutes from './routes/stock.routes';
 import adminRoutes from './routes/admin.routes';
+import inventoryRoutes from './routes/inventory.routes';
+import alertRoutes from './routes/alert.routes';
 
 
 dotenv.config();
@@ -36,6 +38,8 @@ app.use('/api/products', productRoutes);
 app.use('/api/categories', categoryRoutes); 
 app.use('/api/stock', stockRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/inventory', inventoryRoutes);
+app.use('/api/alerts', alertRoutes);
 
 
 export default app;

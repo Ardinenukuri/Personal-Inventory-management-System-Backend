@@ -9,10 +9,8 @@ export const validateRequest = (schema: AnyZodObject) =>
                 query: req.query,
                 params: req.params,
             });
-            // When everything is good, we call next() and can return.
             return next();
         } catch (error) {
-            // When there's an error, we send a response but DO NOT return it.
             res.status(400).json(error);
         }
     };

@@ -18,5 +18,15 @@ export const CategoryController = {
             }
             res.status(500).json({ message: 'Error creating category' });
         }
+    },
+
+    getAllCategories: async (req: Request, res: Response) => {
+    try {
+      const categories = await CategoryService.findAll();
+      res.status(200).json(categories);
+    } catch (error: any) {
+      res.status(500).json({ message: 'Error fetching categories' });
     }
+  },
+
 };

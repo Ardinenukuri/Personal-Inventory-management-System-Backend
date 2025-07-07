@@ -76,3 +76,9 @@ export const completeRegistrationSchema = z.object({
     }),
 });
 
+export const updateUserSchema = z.object({
+  body: z.object({
+    role: z.enum(['admin', 'user']).optional(),
+    status: z.enum(['active', 'pending', 'disabled']).optional(),
+  }),
+});

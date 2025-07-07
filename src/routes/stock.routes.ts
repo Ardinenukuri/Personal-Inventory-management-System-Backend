@@ -1,4 +1,3 @@
-// src/routes/stock.routes.ts
 import { Router } from 'express';
 import { StockController } from '../controllers/stock.controller';
 import { protect } from '../middlewares/auth.middleware';
